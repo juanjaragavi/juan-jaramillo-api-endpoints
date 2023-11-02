@@ -3,6 +3,12 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import requests
 import os
+from pydantic import BaseModel
+
+class TodoItem(BaseModel):
+    id: int
+    title: str
+    completed: bool
 
 load_dotenv()
 
@@ -25,48 +31,25 @@ def get_cats():
     response = supabase.table('cat_breeds').select("breed").execute()
     return response
 
-todo_items = []
-
 @app.get("/todo/")
-def get_items():
-    return {"items": todo_items}
+async def get_items():
+    response = supabase.table('todos').select("*").execute()
+    return response
 
 @app.post("/todo/")
-def add_item(request: dict):
-    todo_items.append(request["item"])
-    return {"status": "ok", "message": "Item added"}
+async def add_item(item: TodoItem):
+    data, count = supabase.table('todos').insert(item.dict()).execute()
+    return {"status": "ok", "message": "Item added", "data": data, "count": count}
 
-@app.put("/todo/{item_index}")
-def edit_item(item_index: int, request: dict):
-    try:
-        todo_items[item_index] = request["new_title"]
-        return {"status": "ok", "message": f"Item at index {item_index} updated"}
-    except IndexError:
-        return {"status": "error", "message": "Item index out of range"}
+@app.put("/todo/{item_id}")
+async def edit_item(item_id: int, request: dict):
+    response = supabase.table('todos').update(request).eq('id', item_id).execute()
+    return response
 
-@app.delete("/todo/{item_index}")
-def delete_item(item_index: int):
-    try:
-        deleted_item = todo_items.pop(item_index)
-        return {"status": "ok", "message": f"Deleted item: {deleted_item}"}
-    except IndexError:
-        return {"status": "error", "message": "Item index out of range"}
-
-@app.get("/hello/")
-def welcome():
-    return "Hello World!"
-
-@app.post("/hello/")
-def welcome():
-    return "Hello World!"
-
-@app.get("/person/")
-def person():
-    return {'name':'Jimit', 'address':'India'}
-
-@app.get("/numbers/")
-def print_list():
-    return list(range(5))
+@app.delete("/todo/{item_id}")
+async def delete_item(item_id: int):
+    response = supabase.table('todos').delete().eq('id', item_id).execute()
+    return response
 
 @app.get("/domains/")
 def check_domains():
