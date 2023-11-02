@@ -1,5 +1,17 @@
 from fastapi import FastAPI
+from supabase import create_client, Client
+from dotenv import load_dotenv
 import requests
+import os
+
+load_dotenv()
+
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
+supabase: Client = create_client(url, key)
+
+FLASK_APP = os.environ.get("FLASK_APP")
+FLASK_ENV = os.environ.get("FLASK_ENV")
 
 app = FastAPI()
 
@@ -10,6 +22,11 @@ def home():
 @app.get("/health/")
 def health():
     return {"status": "ok"}
+
+@app.get("/cats/")
+def get_cats():
+    response = supabase.table('cat_breeds').select("breed").execute()
+    return response
 
 todo_items = []
 
