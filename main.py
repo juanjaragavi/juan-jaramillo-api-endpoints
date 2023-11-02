@@ -10,9 +10,6 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
-FLASK_APP = os.environ.get("FLASK_APP")
-FLASK_ENV = os.environ.get("FLASK_ENV")
-
 app = FastAPI()
 
 @app.get("/")
@@ -63,11 +60,11 @@ def welcome():
 def welcome():
     return "Hello World!"
 
-@app.get('/person/')
+@app.get("/person/")
 def person():
     return {'name':'Jimit', 'address':'India'}
 
-@app.get('/numbers/')
+@app.get("/numbers/")
 def print_list():
     return list(range(5))
 
