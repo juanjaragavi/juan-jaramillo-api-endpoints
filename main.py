@@ -38,7 +38,7 @@ async def get_items():
 
 @app.post("/todo/")
 async def add_item(item: TodoItem):
-    data, count = supabase.table('todos').insert(item.dict()).execute()
+    data, count = supabase.table('todos').insert(item.model_dump()).execute()
     return {"status": "ok", "message": "Item added", "data": data, "count": count}
 
 @app.put("/todo/{item_id}")
