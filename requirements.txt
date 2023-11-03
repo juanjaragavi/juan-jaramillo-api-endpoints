@@ -1,8 +1,7 @@
-pydantic==2.4
+pydantic
 uvicorn[standard]
-requests==2.31.0
-supabase==1.2.0
-fastapi==0.104.1
-python-dotenv==1.0.0
+requests
+supabase
+fastapi
+python-dotenv
 pyodbc
-azure-identity
